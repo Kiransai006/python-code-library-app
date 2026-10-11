@@ -1,0 +1,115 @@
+# Docker Swarm stack. Swarm ignores build:, container_name and depends_on,
+# so this file only references the images pushed by Jenkins.
+# The DB service must be named "db" because the Python services default to DB_HOST=db.
+services:
+  db:
+    image: ${IMAGE_REPO}:db-${TAG}
+    volumes:
+      - mydata:/var/lib/mysql
+    networks:
+      - myapp
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      resources:
+        reservations:
+          cpus: "0.25"
+          memory: 256M
+        limits:
+          cpus: "0.5"
+          memory: 512M
+
+  auth_service:
+    image: ${IMAGE_REPO}:auth-${TAG}
+    networks:
+      - myapp
+    deploy:
+      replicas: 2
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+        failure_action: rollback
+      restart_policy:
+        condition: on-failure
+      resources:
+        reservations:
+          cpus: "0.25"
+          memory: 100M
+        limits:
+          cpus: "0.5"
+          memory: 200M
+
+  book_service:
+    image: ${IMAGE_REPO}:book-${TAG}
+    networks:
+      - myapp
+    deploy:
+      replicas: 2
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+        failure_action: rollback
+      restart_policy:
+        condition: on-failure
+      resources:
+        reservations:
+          cpus: "0.25"
+          memory: 100M
+        limits:
+          cpus: "0.5"
+          memory: 200M
+
+  borrow_service:
+    image: ${IMAGE_REPO}:borrow-${TAG}
+    networks:
+      - myapp
+    deploy:
+      replicas: 2
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+        failure_action: rollback
+      restart_policy:
+        condition: on-failure
+      resources:
+        reservations:
+          cpus: "0.25"
+          memory: 100M
+        limits:
+          cpus: "0.5"
+          memory: 200M
+
+  frontend:
+    image: ${IMAGE_REPO}:frontend-${TAG}
+    ports:
+      - "5000:5000"
+    networks:
+      - myapp
+    deploy:
+      replicas: 2
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+        failure_action: rollback
+      restart_policy:
+        condition: on-failure
+      resources:
+        reservations:
+          cpus: "0.25"
+          memory: 100M
+        limits:
+          cpus: "0.5"
+          memory: 200M
+
+networks:
+  myapp:
+    driver: overlay
+
+volumes:
+  mydata:
