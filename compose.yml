@@ -1,60 +1,90 @@
 ---
 services:
   db:
-    image: shaikmustafa/arshad:db
-    deploy:
-      replicas: 1
+    build: ./database
+    image: ${IMAGE_REPO:-kiransai006/python-code-library-app}:db-${TAG:-latest}
     ports:
       - "3306:3306"
+    volumes:
+      - mydata:/var/lib/mysql/
     networks:
-      - mynetwork
-
-  auth_service:
-    image: shaikmustafa/arshad:auth
+      - myapp
     deploy:
-      replicas: 1
+      resources:
+        reservations:
+          cpus: "0.25"
+          memory: 256M
+        limits:
+          cpus: "0.5"
+          memory: 512M
+ 
+  auth_service:
+    build: ./auth
+    image: ${IMAGE_REPO:-kiransai006/python-code-library-app}:auth-${TAG:-latest}
     ports:
       - "5001:5001"
     networks:
-      - mynetwork
-    depends_on:
-      - db
-    
-
-  book_service:
-    image: shaikmustafa/arshad:book
+      - myapp
     deploy:
-      replicas: 1
+      resources:
+        reservations:
+          cpus: "0.25"
+          memory: 100M
+        limits:
+          cpus: "0.5"
+          memory: 200M
+ 
+  book_service:
+    build: ./book
+    image: ${IMAGE_REPO:-kiransai006/python-code-library-app}:book-${TAG:-latest}
     ports:
       - "5002:5002"
     networks:
-      - mynetwork
-    depends_on:
-      - db
-  borrow_service:
-    image: shaikmustafa/arshad:borrow
+      - myapp
     deploy:
-      replicas: 1
+      resources:
+        reservations:
+          cpus: "0.25"
+          memory: 100M
+        limits:
+          cpus: "0.5"
+          memory: 200M
+ 
+  borrow_service:
+    build: ./borrow
+    image: ${IMAGE_REPO:-kiransai006/python-code-library-app}:borrow-${TAG:-latest}
     ports:
       - "5003:5003"
     networks:
-      - mynetwork
-    depends_on:
-      - db
-
-  frontend:
-    image: shaikmustafa/arshad:frontend
+      - myapp
     deploy:
-      replicas: 1
+      resources:
+        reservations:
+          cpus: "0.25"
+          memory: 100M
+        limits:
+          cpus: "0.5"
+          memory: 200M
+ 
+  frontend:
+    build: ./
+    image: ${IMAGE_REPO:-kiransai006/python-code-library-app}:frontend-${TAG:-latest}
     ports:
       - "5000:5000"
     networks:
-      - mynetwork
-    depends_on:
-      - auth_service
-      - book_service
-      - borrow_service
-
+      - myapp
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.25"
+          memory: 100M
+        limits:
+          cpus: "0.5"
+          memory: 200M
+ 
 networks:
-  mynetwork:
+  myapp:
     driver: bridge
+ 
+volumes:
+  mydata:
