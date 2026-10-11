@@ -17,7 +17,7 @@ services:
         limits:
           cpus: "0.5"
           memory: 512M
- 
+
   auth_service:
     build: ./auth
     image: ${IMAGE_REPO:-kiransai006/python-code-library-app}:auth-${TAG:-latest}
@@ -33,7 +33,7 @@ services:
         limits:
           cpus: "0.5"
           memory: 200M
- 
+
   book_service:
     build: ./book
     image: ${IMAGE_REPO:-kiransai006/python-code-library-app}:book-${TAG:-latest}
@@ -49,7 +49,7 @@ services:
         limits:
           cpus: "0.5"
           memory: 200M
- 
+
   borrow_service:
     build: ./borrow
     image: ${IMAGE_REPO:-kiransai006/python-code-library-app}:borrow-${TAG:-latest}
@@ -65,7 +65,7 @@ services:
         limits:
           cpus: "0.5"
           memory: 200M
- 
+
   frontend:
     build: ./
     image: ${IMAGE_REPO:-kiransai006/python-code-library-app}:frontend-${TAG:-latest}
@@ -81,10 +81,10 @@ services:
         limits:
           cpus: "0.5"
           memory: 200M
- 
+
 networks:
   myapp:
     driver: bridge
- 
+
 volumes:
   mydata:
